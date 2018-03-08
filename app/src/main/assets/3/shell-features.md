@@ -1,0 +1,125 @@
+# Shell features
+
+In this part, we'll learn about the bash shell, and a few of it's features.
+
+## What's the shell?
+
+The shell, usually the ```bash``` shell, is the thing that you type commands into. When you talk about using Linux, what you're actually interacting with is the ```bash``` shell. **The important thing to understand is that the shell is a normal application, just like any of the other applications running on a Linux system.**
+
+## STDIN, STDOUT and STDERR
+
+```STDIN```, ```STDOUT``` and ```STDERR``` are the three special **file descriptors** that are used by applications on Linux. 
+
+####ELI5 file descriptor?
+
+Basically, it's an integer that links to a file. So when you want to read/write to a file, you use the file descriptor to refer to that file. 
+
+### 1. STDIN 
+
+```STDIN``` or ```Standard Input``` is used by programs to take in their input. ```STDIN```  is also represented by ```0```.
+
+By default, the ```STDIN``` is the user's keyboard(because that's what you use to type in commands)
+
+### 2. STDOUT
+
+```STDOUT``` or ```Standard Output``` is used by programs to output the result. ```STDOUT```  is also represented by ```1```.
+
+By default, the ```STDOUT``` is the shell. When you run a program, the  output is printed on the shell
+
+### 3. STDERR
+
+```STDERR``` or ```Standard Error``` is used by programs to print any errors that occur while the program is running. ```STDERR```  is also represented by ```2```.
+
+By default, the ```STDERR``` is the shell. When you run a program, any errors are printed on the shell.
+
+
+
+| Type   | Name           | Symbol |
+| ------ | -------------- | ------ |
+| STDIN  | Standard Input | 0      |
+| STDOUT | Standard Ouput | 1      |
+| STDERR | Standard Error | 2      |
+
+
+
+## Input, Output and Error Redirection
+
+### 1. Input Redirection
+
+Let's say that you want your input to come from somewhere else, other than the keyboard( ie. you don't want to type it in). You can use the ```0<``` symbol to specify a different input source. This can also be a file. 
+
+For example, the ```wc -l``` command counts the number of lines in a given piece of data. We can use the ```0<``` to specify the file ```logfile.log``` as input for the command.
+
+![](in-redir.png)
+
+
+
+
+
+We can also use ```<``` instead of ```0<``` for specifying  input.
+
+ ### Output Redirection
+
+If you want to store the output of a program instead of just displaying it on the screen, you can use the ```1>``` symbol, or just ```>``` to specify output location. We can stream the output of ```ls -l``` to the file ```file7```
+
+![](out-redir.png)
+
+
+
+ **The important thing to remember is that the ```>``` symbol overwrites the file ie. all previous contents are erased.**
+
+If you just want to append to the file, use the ```>>``` symbol instead.
+
+![](out-redir2.png)
+
+As you can see, the output of the previous command has been preserved. 
+
+### 3. Error Redirection
+
+If you want any errors produced by a program to go to a specific file, you can use the ```2>``` symbol to specify the file. 
+
+![](err-redir.png)
+
+As you can see, there is no file called ```uhdfpa``` . So the ```ls``` command errors out. In the second instance, we stream the errors to the file ```errorfile```.
+
+### Using all 3 together:
+
+All 3 types of redirection can be used together: 
+
+![](all-redir.png)
+
+## Pipes
+
+Pipes are a major unique feature of UNIX and UNIX-like OSes. Pipes allow the output of a program to be fed in to another program. Pipes are represented by the ```|``` symbol. 
+
+For example, the ```ps aux``` command prints all running processes in the system, each process displayed on a new line. So, we can pipe the output of this command to ```wc -l``` to find the total number of processes running on the system:
+
+![](pipes.png)
+
+## Shell keyboard shortcuts
+
+These are just a few simple keyboard shortcuts that can be used in the shell:
+
+| Shortcut     | Description                              |
+| ------------ | ---------------------------------------- |
+| ```CTRL+a``` | Move the cursor to the beginning of the line |
+| ```CTRL+e``` | Move the cursor to the end of the line   |
+| ```CTRL+c``` | Interrupt/close a running program        |
+| ```CTRL+l``` | Clear the terminal screen(you can also use the ```clear``` command to do this) |
+| ```CTRL+d``` | Close the terminal session               |
+
+## Using the ```history``` command to find and run previous commands
+
+You can use the ```history``` command to get previously run commands:
+
+![](his1.png)
+
+If you want to rerun the command that you previously entered, you can just type ```!!```. 
+
+![](his2.png)
+
+Alternatively, if you want to run another previously entered command, you can type ```!``` followed by the command number, like so:
+
+![](his3.png)
+
+In this screenshot, you can see that ```ls -l``` is the **500th** entered command. So, if we type ```!500``` , the command is rerun.

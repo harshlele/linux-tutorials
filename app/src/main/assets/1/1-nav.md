@@ -1,0 +1,134 @@
+#Moving around in the Filesystem
+
+## Navigating around in the filesystem
+
+If you want to use Linux effectively, you have to be able to move around in the filesystem. You have to know the purpose of all the major directories and files. In Linux, most program configuration is based on files - you edit a file to make whatever changes you want to make, and then restart the program or service in order to affect your changes. This is going to be a major part of managing a Linux system.
+
+### The major commands for navigation are -  
+
+#### 1. pwd (Print Working Directory)
+
+```pwd```  prints the path of the directory that you are currently in. 
+
+So for example, I have created a special folder called ``` linux-guides``` for these guides. If I run the command, this is what I get - 
+
+![](pwd1.png)
+
+As you can see, it's the absolute path of the directory that I'm currently in.
+
+#### 2. ls 
+
+``` ls``` lists the contents of a directory. By default, ls just displays the names of files/directories in the current directory.
+
+![](ls1.png)
+
+  You can also give it another directory as an argument, and it will show you the contents of that directory.
+
+![](ls2.png)
+
+In this screenshot, we pass ```/var/``` as an argument, and the ```ls``` command shows the contents of the ```/var/``` directory. 
+
+But in this case, we can't see hidden files. We can pass the ```-a``` flag to show hidden files.
+
+![](ls3.png)
+
+```.hiddenfile``` is a hidden file that wasn't visible in the previous screenshots, but in this case, it's visible.
+
+---
+
+**Note: ** All hidden files begin with a ```.``` . Additionally, you can also see two other items - ```.``` and ```. . ``` .The former refers to the current directory, ie. ```linux-guides```, while the latter refers to the parent directory of the current directory, in this case - ```raw```
+
+---
+
+We can also pass other flags, like ```-l``` to arrange the files in a vertical list and show other information like size, and the ```-h``` flag to make the data human-readable. 
+
+This is an example of all the flags used together - 
+
+![](ls4.png)
+
+So in this case, we can see a vertical list of files with some information about them. For example, we can see that ```file6``` has a size of ```100MB```. We can also see other information, that I'll talk about in future parts. 
+
+The screenshot above is how i tend to use the ```ls``` command. The default output is pretty sparse, while this shows you a lot of other stuff. 
+
+#### 3. cd
+
+The ```cd``` command is used to go to another directory. For example, to enter directory ```dir1``` , 
+
+![](cd1.png)
+
+As you can see from the output of ```pwd``` we are in the ```dir1``` directory. To go back to the parent directory, pass ```. .``` as the argument:
+
+![](cd2.png)
+
+And we are back to the ```linux-guides``` directory. 
+
+To go to a directory outside the current directory, you have to type it's absolute path. For example, 
+
+![](cd3.png)
+
+ 
+
+We have to type ```/var/``` and not just ```var/``` to go to the var directory, because the var directory is outside the current directory.
+
+To go to the home directory of a user, just type ```cd``` without any arguments:
+
+![](cd4.png)
+
+#### 4. pushd and popd
+
+These are somewhat advanced commands, but they can be very useful when actually managing a linux system. 
+
+Let's say you are doing something in the ```linux-guides```, when you realise that you have to edit some file or do something else in the ```/etc/``` directory, then, when you're in the there, you realise that you have to do something in the ```/var/``` directory, so you go there. In this case, you'd have to use the ```cd``` command several times and you will have to type directory paths accurately, which can be very laborious. 
+
+In situations like these, you can use the **Directory Stack**, using the ```pushd``` and ```popd``` commands. Simply, use ```pushd``` to push the current directory to the stack and go to the new directory, and ```popd``` to remove directories from the stack, and go to that directory.
+
+In this example, this is how we would use it:
+
+![](pushd.png)
+
+
+
+1. With the first command -  ```pushd /etc/``` , we push the current directory, ie ```linux-guides``` to the stack, and go to the ```/etc/``` directory. 
+2. With the second command - ```pushd /var/```, we push the current directory, ie. ```/etc/``` to the stack and go to the ```/var/``` directory. 
+3. In the ```/var/``` directory, we do whatever we have to do
+4. Then, we run ```popd``` to go to the previous directory in the stack ie. ```/etc/```
+5. We run ```popd``` again to come back to our original location - ```linux-guides```
+
+
+
+**Remember, in the Directory Stack, what goes in last, comes out first.**
+
+---
+
+**Note:** In the Linux command line, if you don't want the interpreter to execute something - ie. to comment out a statement, append a ```#``` to it. As you can see in the screenshot, running ```#do stuff``` does nothing.
+
+---
+
+
+
+## The Linux Filesystem Hierarchy
+
+Now that you know how to navigate around in directories, it's important to know some of the important top-level directories in Linux. 
+
+If we go to the root of the file system,ie. ```/``` and see the contents:
+
+![](fhs.png)
+
+You can see a lot of directories in there. It's good to know what each directory is used for. 
+
+1. ```bin```  and ```sbin```- This directory contains all the application binaries.Binaries in  ```sbin``` can be executed only by the root user.
+2. ```dev``` - In Linux, each hardware device has a file associated with it. Sometimes, you can even extract data from the device by reading the file. For example, if you want to get the image from a USB webcam, you may be able to get it by just reading the ```/dev/video0``` file. 
+3. ```home``` - Contains the home directories for each user. The home directory is where you store all your personal data like pictures, music and videos. 
+4. ```lib``` and ```lib64``` - Contains libraries that are used by applications, typically a library has a ```.so``` extension. ```lib64``` contains 64-bit libraries.
+5. ```mnt``` - This is the directory in which you mount any temporary, removable storage device like a USB drive or a portable HDD. 
+6. ```proc```  and ```sys``` - These contain information about the running processes in the system. ```sys``` also contains information about the kernel and hardware.
+7. ```run``` - Contains data about the current boot of the system. Basically, this data is generated afresh every time you boot the computer.
+8. ```srv``` - If you want to serve something over the network, you put it in this directory. 
+9. ```usr``` - This has binaries and data that can be used by all users. Most of the data in this directory is read-only, ie. un-modifiable.
+10. ```boot``` - Contains the bootloader of the system. All changes inside this directory are handled by the system, and generally, you shouldn't touch the directory, because it's very easy to mess up something.
+11. ```etc``` - Contains configuration files for applications. If you want to change the settings of some terminal-only application, you typically have to edit the config file inside ```etc```
+12. ```lost+found``` - This is a very interesting directory. During a system crash, if the system somehow recovers any lost data, it is placed in this directory. You won't really have to use this directory a lot.
+13. ```opt``` - This is generally where any proprietary applications will install themselves.For example, if you install Google Chrome on Linux, it will be installed in the ```opt``` directory.
+14. ```root``` - This is basically the home directory of the ```root``` user. You probably won't  use this directory a lot.
+15. ```tmp``` - This directory is a temporary directory, ie. it's cleared on every boot. Generally, applications will use this directory to store temporary data
+16. ```var``` - This directory generally contains large files. The two most important things stored in this directory are the log files, and the package cache.

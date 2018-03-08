@@ -1,0 +1,94 @@
+#Working with Files
+
+
+In the previous tutorial, we looked at navigating the filesystem. In this one, we'll look at creating files and directories, and reading data from files. 
+
+## Creating Files and Directories
+
+### 1. Creating empty files with the ```touch``` command
+
+Let's say you want to create an empty file called ```file7``` . You can do that by using the ```touch``` command.
+
+![](touch1.png)
+
+You can also create multiple files at the same time:
+
+![](touch2.png)
+
+Another use of the ```touch``` command is to change the timestamp on the file. So sometimes, you may want to change the timestamp of a file without actually modifying its contents. You can touch the file to do so:
+
+![](touch3.png)
+
+As you can see, the timestamp on ```file1```(shown in the 6th column of the output of ```ls -l``` ) was 21 December. But after using the ```touch``` command, the timestamp has changes to 25 December.
+
+### 2. Creating Directories with the ```mkdir``` command
+
+You can create directories with the ```mkdir``` command. As with ```touch```, you can create multiple directories at the same time:
+
+![](mkdir.png)
+
+### 3. Deleting files and directories with ```rm``` 
+
+You can  delete a file with the ```rm``` command:
+
+![](rm1.png)
+
+As you can see, ```file10``` has been deleted.
+
+If you want to delete an entire directories with all of it's contents, you can use the ```-r``` or ```--recursive``` argument.
+
+![](rm2.png)
+
+---
+
+**Note:** Be careful when deleting files, and be sure that you are deleting exactly the files that you want to delete. This is especially important when you have files/directories which have the same name as Linux system files and directories. For example, if you have a directory called ```var```, be sure to write ```rm -r var/``` and **not** ```rm -r /var/``` . The first one will delete the ```var``` directory you want to delete. The second one will delete the top-level ```/var``` directory. 
+
+And **never EVER** enter ```rm -rf /```. It's a meme for a reason.
+
+---
+
+## Reading Files
+
+### 1. Reading files using the ```cat``` command
+
+You can use the ```cat``` command to read the data of a file:
+
+![](cat1.png)
+
+### 2. Using the ```head``` commands and ```tail``` commands for reading data
+
+Using ```head```, you can read the first 10 lines from the start of a file. Or, you can specify an arbitrary no of lines to read using the ```-n``` argument. 
+
+![](head1.png)
+
+Similarly, you can use the ```tail``` command to for reading lines at the end of the file. 
+
+![](tail1.png)
+
+```tail``` has another use. Let's say that you are reading a log file that a program is logging to at present. You can use the ```-f``` argument to show lines as they are written. 
+
+![](tail2.png)
+
+If you see at the end of the screenshot, you can see that the command hasn't ended. It's waiting for new lines to be added, and will continuously display lines as they are written to the file. To exit, press ```CTRL+C``` . 
+
+### 3. Using the ```less``` command to read files
+
+The ```less``` command is my preferred way of reading files, especially on a system that has no GUI. ```less``` is a pager, ie. you can scroll up and down the content of the file using ```less```. In the other methods, if you have a big file, there is no way to scroll up. 
+
+![](less1.png)
+
+
+
+This is how the ```less``` command shows files. You can scroll up or down using the arrow keys. To quit, press ```q```. You can also search for terms inside the file. So for example, if you had to search for the term "USB" inside this file, you type ```/USB```. 
+
+![](less2.png)
+
+As you can see, the word "USB" has been highlighted. 
+
+## Linking files with the ```ln``` command
+
+Let's say you want to create a file ```file11``` that mirrors the data in ```file3```. Generally, the reason you want to do this, is that you don't want a user to know about ```file3```. But you still want the user to be able to access the data. You can use the ```ln -s``` command to do that. 
+
+![](ln1.png)
+
+ As you can see, ```file11``` shows that it has the same data as ```file3```. But if you look at ```ls -l``` you see that ```file``` is not a real file. **It's just a pointer to ```file3```.** 

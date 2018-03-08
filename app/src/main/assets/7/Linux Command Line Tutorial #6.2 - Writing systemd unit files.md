@@ -1,0 +1,173 @@
+# Writing systemd unit files!
+
+In the last tutorial, we took a brief look at systemd. In this part, we'll take a look at writing our own unit files for our own services. This is something that i think isn't really covered very well by other linux tutorials, so i think this is going to be very interesting. 
+
+## But why do i need to learn how to create my own service/unit files?
+
+As you learn more about linux, and especially bash scripting, you'll increasing want to solve any problems you face by writing scripts. Some of these scripts may need to be started or stopped at specific times. Or maybe, you just want to start it at boot. 
+
+Another reason to learn this is that many applications nowadays come with systemd service files along with their binaries. Maybe you need to tweak the app's behavior and so need to tweak the service file?
+
+So with that in mind, we'll look at creating simple unit files for a small script.
+
+## Script used in this tutorial
+
+For demonstration purposes, in this tutorial we'll use a simple script that writes the output of the ```date``` command to a file every 5 seconds. Here's the script:
+
+<center>![](script.png)</center>
+
+The ```date``` command produces this output:
+
+```Sun Mar  4 20:44:28 IST 2018```
+
+
+
+So this is what will be added to the file every 5 seconds. 
+
+Ok, so now, we'll actually start writing the service file. 
+
+### File location 
+
+
+
+So the first thing you need to know is where the systemd service files are located. They are located at 2 different locations:
+
+1. ```/usr/lib/systemd/system/``` - this folder contains files that come with the packages that you have installed on your system.
+2. ```/etc/systemd/system/``` - is the directory where the user is supposed to store his custom files.
+
+The second location takes precedence over the first one. What that means is that if there are 2 unit files with the same name in both locations, the one present in the second location will be run.
+
+So obviously, we'll have to make our file at the second location - ```/etc/systemd/system/``` . 
+
+Make a new file called ```myunit.service``` in this folder. In all further screenshots, i'll use the ```nano``` text editor, although you can use any other terminal/graphical text editor(although you'll have to open it in root privileges).
+
+You should have an entirely blank file:
+
+<center>![](blank.png)</center>
+
+### Unit file format:
+
+Systemd unit files are written in a format that consists of setting various properties, and there are groups of  multiple properties. It's similar to the ```.ini``` file format used in a lot of games.
+
+So let's begin writing the unit file
+
+### 1. The ```[Unit]``` section
+
+The ```Unit``` section contains information about the unit is and what other units/services it requires to run successfully. 
+
+The first thing we'll add is a simple description, like so:
+
+<center>![](descript.png)</center>
+
+As you can see, we are in the ```[Unit]``` section. You can also see that the file format is very simple. Here, ```Description``` is the property, and ```A script that prints the date every 5 seconds``` is the value of that property, separated by an ```=``` sign.
+
+#### ```Requires``` and ```After```
+
+Let's say, that we only want to be able to start this service if we have a network connection, ie. if ```NetworkManager.service``` is available. We use the ```Requires``` and ```After``` properties to set that, like so:
+
+``` 
+After=NetworkManager.service                
+Requires=NetworkManager.service   
+```
+
+ ```Requires``` specifies that this unit *needs* ```NetworkManager.service``` to be available in the system in order to run, ie. it's a **compulsory** dependency. On the other hand, if you only want it to be an **optional** dependency, ie. this unit wants some services but can also function without them, you can set the ```Wants``` property instead of ```Requires```.
+
+```After``` specifies that we specifically want this service to start *after* ```NetworkManager.service``` has started. **If you only specify the ```Requres``` property without setting the ```After``` property, both the services will start simultaneously.**
+
+#### ```AssertPath```
+
+Let's say we want to ensure that a certain location exists before starting this service. We can  set that using the ```AssertPath``` property, like so:
+
+```
+AssertPathExists=/home/h/raw/
+```
+
+Now, if the path ```/home/h/raw/``` doesn't exist, our service won't start.
+
+So finally, this is how our file looks:
+
+<center>![](unit.png)</center>
+
+### 2. The ```[Service]``` section
+
+This section specifies the actual location of the program/application/script, and what type of program it is.
+
+#### ```Type```
+
+This property specifies what type of program this is. The important types are:
+
+1.```simple``` - this is the default service type. This assumes that the service doesn't fork off another process, and that it keeps running on for a long time(maybe forever.)
+
+We'll use ```simple``` as the type for our service.
+
+2.```forking``` - If your service opens an application in an entirely different process and exits off, then use this type. Systemd then tracks that new process and starts/stops it when the systemd commands are used.
+
+3.```oneshot``` - If your script does one thing and shuts down, use this type. For example in our script, if, instead of writing every 5 seconds, we were only writing the date *once*, we'd have used this type.
+
+#### ```ExecStart```
+
+This is the actual binary or script that you want to run. In our example, it's a script called ```test.sh``` stored at ```/home/h/raw/linux-guides```. So this is what we'll write:
+
+```
+ExecStart=/home/h/raw/linux-guides/test.sh 
+```
+
+So finally, after these 2 sections, this is how our service file looks like:
+
+<center>![](service.png)</center>
+
+### 3. The ```[Install]``` section
+
+ In the ```[Install]``` section, you can set *reverse dependenices*, ie. you can make some other unit dependent on your unit. This is done using the ```WantedBy``` or ```RequiredBy``` properties. 
+
+So let's say we wanted the graphical desktop to run only when our service was running. We can do so by adding ```graphical.target``` to ```WantedBy```, like so:
+
+```
+WantedBy=graphical.target
+```
+
+
+
+So after adding the 3 sections, this is how our service file looks like:
+
+<center>![](final.png)</center>
+
+Now you can save the file, and exit. 
+
+## Testing the service
+
+You can check the status of the service using this command:
+
+```systemctl status myunit.service```
+
+And you'll get this output:
+
+<center>![](status.png)</center>
+
+Obviously, the service is off by default.But i have tried starting it, and so it shows a few log messages from previous starts. In your case, there should be no logs.
+
+You can start the service by running:
+
+```
+systemctl start myunit.service
+```
+
+If you run the ```status``` command again, you'll get this:
+
+<center>![](poststart.png)</center>
+
+If we check in ```timestamp.txt```,we see that it indeed is logging:
+
+<center>![](timestamp.png)</center>
+
+You can stop the service by running:
+
+```
+systemctl stop myunit.service
+```
+
+Running the ```status``` command again, we get this:
+
+<center>![](poststop.png)</center>
+
+You can also start this service on boot by using the ```enable``` command. 
