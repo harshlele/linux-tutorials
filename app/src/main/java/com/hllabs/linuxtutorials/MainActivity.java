@@ -1,5 +1,6 @@
 package com.hllabs.linuxtutorials;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -68,6 +69,15 @@ public class MainActivity extends AppCompatActivity {
                 TextDrawable drawable = TextDrawable.builder()
                     .buildRound(String.valueOf(position+1),getResources().getColor(R.color.colorAccent));
                 holder.noImage.setImageDrawable(drawable);
+                final int i = position + 1;
+                holder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(getApplicationContext(),TutActivity.class);
+                        intent.putExtra("i",i);
+                        startActivity(intent);
+                    }
+                });
         }
 
         @Override
