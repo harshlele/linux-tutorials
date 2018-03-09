@@ -2,15 +2,23 @@ package com.hllabs.linuxtutorials;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ImageView;
+
+import com.squareup.picasso.Picasso;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import br.tiagohm.markdownview.MarkdownView;
 import br.tiagohm.markdownview.css.InternalStyleSheet;
@@ -148,9 +156,58 @@ public class TutActivity extends AppCompatActivity {
             this.context = context;
         }
 
+        //post a new Event containing the clicked url
         @JavascriptInterface
         public void click(String url){
-            Log.d ("LOG!",url);
+            EventBus.getDefault().post(new ImageClickEvent(url));
         }
+    }
+
+    //event that is generated when an image element is clicked
+    public static class ImageClickEvent {
+        public String url;
+
+        public ImageClickEvent(String url) {
+            this.url = url;
+        }
+    }
+
+    //create a dialog with the image
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(ImageClickEvent event) {
+
+        AlertDialog.Builder ImageDialog = new AlertDialog.Builder(TutActivity.this);
+        ImageDialog.setTitle(event.url);
+        ImageView showImage = new ImageView(TutActivity.this);
+        //use picasso to load the image
+        Picasso.get()
+                .load(event.url)
+                .placeholder(R.drawable.ic_image_128dp)
+                .into(showImage);
+
+        ImageDialog.setView(showImage);
+        ImageDialog.setNegativeButton("Close", new DialogInterface.OnClickListener()
+        {
+            public void onClick(DialogInterface arg0, int arg1)
+            {}
+        });
+        ImageDialog.show();
+
+    }
+
+
+
+    //register for eventbus
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    //unregister eventbus
+    @Override
+    public void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
     }
 }
