@@ -17,6 +17,7 @@ import com.amulyakhare.textdrawable.TextDrawable;
 
 public class MainActivity extends AppCompatActivity {
 
+    //list of tutorials
     private RecyclerView tutorialList;
 
 
@@ -25,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //make the action bar flat
         try {
             getSupportActionBar().setElevation(0f);
 
@@ -42,9 +44,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    //tutorial list adapter
     class TutorialListAdapter extends RecyclerView.Adapter<TutorialListAdapter.ViewHolder>{
 
-
+        //array of titles
         private String[] titles = new String[]{
                 "Moving around in the Filesystem",
                 "Working with Files",
