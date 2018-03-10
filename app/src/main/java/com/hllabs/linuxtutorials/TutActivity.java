@@ -12,8 +12,8 @@ import android.webkit.JavascriptInterface;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.ImageView;
 
+import com.github.chrisbanes.photoview.PhotoView;
 import com.squareup.picasso.Picasso;
 
 import org.greenrobot.eventbus.EventBus;
@@ -38,15 +38,7 @@ public class TutActivity extends AppCompatActivity {
     float x,y;
 
     //title array
-    private String[] titles = new String[]{
-            "Moving around in the Filesystem",
-            "Working with Files",
-            "Shell features",
-            "File Permissions",
-            "User Management",
-            "systemd",
-            "Writing systemd unit files"
-    };
+    private String[] titles = Titles.titles;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -178,7 +170,7 @@ public class TutActivity extends AppCompatActivity {
 
         AlertDialog.Builder ImageDialog = new AlertDialog.Builder(TutActivity.this);
         ImageDialog.setTitle(event.url);
-        ImageView showImage = new ImageView(TutActivity.this);
+        PhotoView showImage = new PhotoView(TutActivity.this);
         //use picasso to load the image
         Picasso.get()
                 .load(event.url)

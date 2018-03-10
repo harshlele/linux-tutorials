@@ -48,15 +48,7 @@ public class MainActivity extends AppCompatActivity {
     class TutorialListAdapter extends RecyclerView.Adapter<TutorialListAdapter.ViewHolder>{
 
         //array of titles
-        private String[] titles = new String[]{
-                "Moving around in the Filesystem",
-                "Working with Files",
-                "Shell features",
-                "File Permissions",
-                "User Management",
-                "systemd",
-                "Writing systemd unit files"
-        };
+        private String[] titles = Titles.titles;
 
         @NonNull
         @Override
