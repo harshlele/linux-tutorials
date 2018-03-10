@@ -14,6 +14,8 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.github.chrisbanes.photoview.PhotoView;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
 import com.squareup.picasso.Picasso;
 
 import org.greenrobot.eventbus.EventBus;
@@ -36,6 +38,9 @@ public class TutActivity extends AppCompatActivity {
     MarkdownView markdownView;
     //touch co-ordinates(used for handling image clicks)
     float x,y;
+    //ad
+    private InterstitialAd mInterstitialAd;
+
 
     //title array
     private String[] titles = Titles.titles;
@@ -125,6 +130,18 @@ public class TutActivity extends AppCompatActivity {
         //add a JS interface(so JS code can call Java code)
         markdownView.addJavascriptInterface(new JsInterface(this), "imageClick");
 
+        //initialise ad
+        mInterstitialAd = new InterstitialAd(this);
+        mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
+        mInterstitialAd.loadAd(new AdRequest.Builder().build());
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(mInterstitialAd.isLoaded()){
+            mInterstitialAd.show();
+        }
+        super.onBackPressed();
     }
 
     //load JS that gets the touched element using touch co-ordinates,
@@ -169,8 +186,9 @@ public class TutActivity extends AppCompatActivity {
     public void onMessageEvent(ImageClickEvent event) {
 
         AlertDialog.Builder ImageDialog = new AlertDialog.Builder(TutActivity.this);
-        ImageDialog.setTitle(event.url);
+        ImageDialog.setTitle("Double tap to zoom");
         PhotoView showImage = new PhotoView(TutActivity.this);
+        showImage.setPadding(0,16,0,0);
         //use picasso to load the image
         Picasso.get()
                 .load(event.url)
@@ -183,6 +201,7 @@ public class TutActivity extends AppCompatActivity {
             public void onClick(DialogInterface arg0, int arg1)
             {}
         });
+
         ImageDialog.show();
 
     }
