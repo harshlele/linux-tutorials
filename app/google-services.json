@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "1073762563126",
+    "firebase_url": "https://linux-tutorials.firebaseio.com",
+    "project_id": "linux-tutorials",
+    "storage_bucket": "linux-tutorials.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1073762563126:android:8584585e04f70dba",
+        "android_client_info": {
+          "package_name": "com.hllabs.linuxtutorials"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1073762563126-p7pgupm41jq4tv2cj6ugrp9haapvi0ak.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.hllabs.linuxtutorials",
+            "certificate_hash": "96b2451f89a14e6ba0952b98bc196be1d7cf3300"
+          }
+        },
+        {
+          "client_id": "1073762563126-7e341k1g85miap8ospr9dhbaok5pif2j.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCj8CuzvHhmZOoFeaKDNlqkEMYdVVuzd6c"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1073762563126-7e341k1g85miap8ospr9dhbaok5pif2j.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
