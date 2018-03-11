@@ -133,7 +133,7 @@ public class TutActivity extends AppCompatActivity {
 
         //initialise ad
         mInterstitialAd = new InterstitialAd(this);
-        mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
+        mInterstitialAd.setAdUnitId("ca-app-pub-7444749934962149/8280385634");
         mInterstitialAd.loadAd(new AdRequest.Builder().build());
     }
 
