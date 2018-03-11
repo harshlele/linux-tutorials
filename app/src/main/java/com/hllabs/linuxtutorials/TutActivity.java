@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
@@ -81,9 +82,11 @@ public class TutActivity extends AppCompatActivity {
         css.addRule("img", "max-width: 100%");
         //make the article background black and text color white, decrease the padding
         css.addRule("body","background-color: #101010","color: #fff","padding: 10px");
-        //change the colors for code,pre tags and even rows of tables
+        //change the colors for code,pre tags and all the even rows of tables
         css.addRule("pre", "background-color: #000000","color: #009688","border-radius: 0px");
         css.addRule("code", "background-color: #000000","color: #009688","border-radius: 0px");
+        css.addRule("pre[language]::before","color: #009688");
+        css.addRule("code.bash","color: #009688");
         css.removeRule("table tr:nth-child(2n)");
 
         //add the CSS, and load the file
@@ -190,6 +193,8 @@ public class TutActivity extends AppCompatActivity {
         ImageDialog.setTitle("Double tap to zoom");
         PhotoView showImage = new PhotoView(TutActivity.this);
         showImage.setPadding(0,16,0,0);
+        showImage.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
         //use picasso to load the image
         Picasso.get()
                 .load(event.url)
