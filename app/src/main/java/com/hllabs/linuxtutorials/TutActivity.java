@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.JavascriptInterface;
@@ -62,7 +63,7 @@ public class TutActivity extends AppCompatActivity {
             getSupportActionBar().setTitle(titles[index - 1]);
         }
         catch (NullPointerException e){
-            e.printStackTrace();
+            Log.d("LOG!", "onCreate: " + e.toString());
         }
 
         markdownView = findViewById(R.id.article_view);

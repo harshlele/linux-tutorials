@@ -15,6 +15,7 @@ public final class Titles {
             "File Permissions",
             "User Management",
             "systemd",
-            "Writing systemd unit files"
+            "Writing systemd unit files",
+            "The sudo command"
     };
 }
