@@ -3,6 +3,7 @@ package com.hllabs.linuxtutorials;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -52,6 +53,7 @@ public class TutActivity extends AppCompatActivity {
     //shows find dialog is visible
     private boolean isFindDialogShown = false;
 
+    //Layout of the dialog shown when finding a word,along with all the buttons inside the dialog
     private LinearLayout findLayout;
     private ImageButton nextBtn,prevBtn,closeBtn;
 
@@ -78,6 +80,7 @@ public class TutActivity extends AppCompatActivity {
             Log.d("LOG!", "onCreate: " + e.toString());
         }
 
+        //initialise views
         markdownView = findViewById(R.id.article_view);
         findLayout = findViewById(R.id.find_layout);
         nextBtn = findViewById(R.id.btn_next);
@@ -150,6 +153,7 @@ public class TutActivity extends AppCompatActivity {
         //add a JS interface(so JS code can call Java code)
         markdownView.addJavascriptInterface(new JsInterface(this), "imageClick");
 
+        //set a listener for when a word search is finished so the search dialog can be shown
         markdownView.setFindListener(new WebView.FindListener() {
             @Override
             public void onFindResultReceived(int i, int i1, boolean b) {
@@ -159,6 +163,8 @@ public class TutActivity extends AppCompatActivity {
             }
         });
 
+
+        //go to the next search result in the page
         nextBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -166,6 +172,7 @@ public class TutActivity extends AppCompatActivity {
             }
         });
 
+        //go to the previous search result in the page
         prevBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -173,6 +180,7 @@ public class TutActivity extends AppCompatActivity {
             }
         });
 
+        //clear all highlighted results, and hide the search dialog
         closeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -188,6 +196,7 @@ public class TutActivity extends AppCompatActivity {
         mInterstitialAd.loadAd(new AdRequest.Builder().build());
     }
 
+    //show the search layout
     private void showFindDialog(boolean show){
         if(show){
             findLayout.setVisibility(View.VISIBLE);
@@ -240,7 +249,7 @@ public class TutActivity extends AppCompatActivity {
         }
     }
 
-
+    //set appbar menu
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -248,6 +257,7 @@ public class TutActivity extends AppCompatActivity {
         return true;
     }
 
+    //show search dialog when search icon is pressed
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -261,11 +271,13 @@ public class TutActivity extends AppCompatActivity {
         }
     }
 
+    //show a dialog with a textfield where the user can enter search query.
     private void showSearchDialog(){
         final AlertDialog.Builder searchDialog = new AlertDialog.Builder(TutActivity.this);
         searchDialog.setTitle("Find in Page");
 
         final EditText searchText = new EditText(getApplicationContext());
+        searchText.setTextColor(Color.BLACK);
         searchText.setPadding(16,16,16,16);
         searchText.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
@@ -283,8 +295,11 @@ public class TutActivity extends AppCompatActivity {
 
     }
 
+    //search the page for text
     private void searchTextInPage(String text){
-        markdownView.findAllAsync(text);
+        if(text != null && !text.equals("")) {
+            markdownView.findAllAsync(text);
+        }
     }
 
     //create a dialog with the image
