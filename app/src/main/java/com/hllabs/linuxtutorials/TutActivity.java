@@ -7,6 +7,9 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +17,9 @@ import android.webkit.JavascriptInterface;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 
 import com.github.chrisbanes.photoview.PhotoView;
 import com.google.android.gms.ads.AdRequest;
@@ -43,6 +49,11 @@ public class TutActivity extends AppCompatActivity {
     //ad
     private InterstitialAd mInterstitialAd;
 
+    //shows find dialog is visible
+    private boolean isFindDialogShown = false;
+
+    private LinearLayout findLayout;
+    private ImageButton nextBtn,prevBtn,closeBtn;
 
     //title array
     private String[] titles = Titles.titles;
@@ -68,6 +79,10 @@ public class TutActivity extends AppCompatActivity {
         }
 
         markdownView = findViewById(R.id.article_view);
+        findLayout = findViewById(R.id.find_layout);
+        nextBtn = findViewById(R.id.btn_next);
+        prevBtn = findViewById(R.id.btn_prev);
+        closeBtn = findViewById(R.id.btn_close);
 
         //create the path of the file(contained in the assets folder)
         file = index + "/" + index + ".md";
@@ -124,6 +139,7 @@ public class TutActivity extends AppCompatActivity {
                     if(dx<10.0/density&&dy<10.0/density){
                         clickImage(touchX,touchY);
                     }
+
                 }
                 return false;
             }
@@ -134,10 +150,49 @@ public class TutActivity extends AppCompatActivity {
         //add a JS interface(so JS code can call Java code)
         markdownView.addJavascriptInterface(new JsInterface(this), "imageClick");
 
+        markdownView.setFindListener(new WebView.FindListener() {
+            @Override
+            public void onFindResultReceived(int i, int i1, boolean b) {
+                if (b && !isFindDialogShown){
+                    showFindDialog(true);
+                }
+            }
+        });
+
+        nextBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                markdownView.findNext(true);
+            }
+        });
+
+        prevBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                markdownView.findNext(false);
+            }
+        });
+
+        closeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                markdownView.clearMatches();
+                findLayout.setVisibility(View.GONE);
+                isFindDialogShown = false;
+            }
+        });
+
         //initialise ad
         mInterstitialAd = new InterstitialAd(this);
         mInterstitialAd.setAdUnitId("ca-app-pub-7444749934962149/8280385634");
         mInterstitialAd.loadAd(new AdRequest.Builder().build());
+    }
+
+    private void showFindDialog(boolean show){
+        if(show){
+            findLayout.setVisibility(View.VISIBLE);
+            isFindDialogShown = true;
+        }
     }
 
     @Override
@@ -185,7 +240,55 @@ public class TutActivity extends AppCompatActivity {
         }
     }
 
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.tut_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+
+            case R.id.action_search:
+                showSearchDialog();
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void showSearchDialog(){
+        final AlertDialog.Builder searchDialog = new AlertDialog.Builder(TutActivity.this);
+        searchDialog.setTitle("Find in Page");
+
+        final EditText searchText = new EditText(getApplicationContext());
+        searchText.setPadding(16,16,16,16);
+        searchText.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        searchDialog.setView(searchText);
+
+        searchDialog.setPositiveButton("Search", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                String query = searchText.getText().toString();
+                searchTextInPage(query);
+                dialogInterface.dismiss();
+            }
+        });
+        searchDialog.show();
+
+    }
+
+    private void searchTextInPage(String text){
+        markdownView.findAllAsync(text);
+    }
+
     //create a dialog with the image
+    //event fired when an image is clicked
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(ImageClickEvent event) {
 

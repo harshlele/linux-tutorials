@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context="com.hllabs.linuxtutorials.TutActivity"
-    android:background="@color/colorPrimary">
+    tools:context="com.hllabs.linuxtutorials.TutActivity">
 
     <br.tiagohm.markdownview.MarkdownView
         android:id="@+id/article_view"
@@ -13,6 +13,43 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
+    <LinearLayout
+        android:id="@+id/find_layout"
+        android:visibility="gone"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_gravity="bottom"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal"
+        android:layout_margin="8dp"
+        >
 
+        <ImageButton
+            android:id="@+id/btn_next"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="Next"
+            android:src="@drawable/ic_arrow_downward_black_24dp"
+            android:backgroundTint="@android:color/white"
+            />
 
-</RelativeLayout>
+        <ImageButton
+            android:id="@+id/btn_prev"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="Prev"
+            android:src="@drawable/ic_arrow_upward_black_24dp"
+            android:backgroundTint="@android:color/white"
+            />
+
+        <ImageButton
+            android:id="@+id/btn_close"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="Close"
+            android:src="@drawable/ic_close_black_24dp"
+            android:backgroundTint="@android:color/white"
+            />
+    </LinearLayout>
+
+</FrameLayout>

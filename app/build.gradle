@@ -30,6 +30,7 @@ dependencies {
     implementation 'com.squareup.picasso:picasso:2.71828'
     compile 'org.greenrobot:eventbus:3.1.1'
     implementation 'com.github.chrisbanes:PhotoView:2.1.3'
+
 }
 
 
