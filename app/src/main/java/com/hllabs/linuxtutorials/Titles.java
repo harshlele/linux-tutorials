@@ -16,6 +16,7 @@ public final class Titles {
             "User Management",
             "systemd",
             "Writing systemd unit files",
-            "The sudo command"
+            "The sudo command",
+            "The lsof command"
     };
 }
