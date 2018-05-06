@@ -7,7 +7,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -43,6 +46,35 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu,menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        if(item.getItemId() == R.id.action_share){
+            String url = "https://play.google.com/store/apps/details?id=com.hllabs.linuxtutorials";
+
+            try {
+                Intent i = new Intent(Intent.ACTION_SEND);
+                i.setType("text/plain");
+                i.putExtra(Intent.EXTRA_SUBJECT, "Linux Tutorials");
+                String sAux = "\nCheck out this app: \n\n";
+                sAux = sAux + url + " \n\n";
+                i.putExtra(Intent.EXTRA_TEXT, sAux);
+                startActivity(Intent.createChooser(i, "Share Via..."));
+            } catch(Exception e) {
+                Log.d("LOG!" , e.toString());
+            }
+
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 
     //tutorial list adapter
     class TutorialListAdapter extends RecyclerView.Adapter<TutorialListAdapter.ViewHolder>{
