@@ -23,6 +23,13 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
 import com.github.chrisbanes.photoview.PhotoView;
+import com.google.ads.consent.ConsentForm;
+import com.google.ads.consent.ConsentFormListener;
+import com.google.ads.consent.ConsentInfoUpdateListener;
+import com.google.ads.consent.ConsentInformation;
+import com.google.ads.consent.ConsentStatus;
+import com.google.ads.consent.DebugGeography;
+import com.google.ads.mediation.admob.AdMobAdapter;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
 import com.squareup.picasso.Picasso;
@@ -30,6 +37,9 @@ import com.squareup.picasso.Picasso;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import br.tiagohm.markdownview.MarkdownView;
 import br.tiagohm.markdownview.css.InternalStyleSheet;
@@ -59,6 +69,8 @@ public class TutActivity extends AppCompatActivity {
 
     //title array
     private String[] titles = Titles.titles;
+
+    private AdRequest adRequest;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -190,10 +202,88 @@ public class TutActivity extends AppCompatActivity {
             }
         });
 
-        //initialise ad
+        final ConsentInformation consentInformation = ConsentInformation.getInstance(getApplicationContext());
+        consentInformation.setDebugGeography(DebugGeography.DEBUG_GEOGRAPHY_EEA);
+        String[] publisherIds = {"pub-7444749934962149"};
+        consentInformation.requestConsentInfoUpdate(publisherIds, new ConsentInfoUpdateListener() {
+            @Override
+            public void onConsentInfoUpdated(ConsentStatus consentStatus) {
+                Log.d("LOG!", "onConsentInfoUpdated: ");
+                switch (consentStatus){
+                    case PERSONALIZED:
+                        initAd(true);
+                        Log.d("LOG!", "onConsentInfoUpdated: personalised");
+                        break;
+                    case NON_PERSONALIZED:
+                        Log.d("LOG!", "onConsentInfoUpdated: non-personalised");
+                        initAd(false);
+                        break;
+
+                    default:
+                        Log.d("LOG!", "onConsentInfoUpdated: default");
+                        if(consentInformation.isRequestLocationInEeaOrUnknown()) showConsentDialog();
+                        else initAd(true);
+                        break;
+                }
+            }
+
+            @Override
+            public void onFailedToUpdateConsentInfo(String errorDescription) {
+                Log.d("LOG!", "onFailedToUpdateConsentInfo ");
+
+                if (consentInformation.isRequestLocationInEeaOrUnknown())  showConsentDialog();
+                else initAd(true);
+            }
+        });
+
         mInterstitialAd = new InterstitialAd(this);
-        mInterstitialAd.setAdUnitId("ca-app-pub-7444749934962149/8280385634");
-        mInterstitialAd.loadAd(new AdRequest.Builder().build());
+        }
+
+    private void showConsentDialog(){
+
+        Log.d("LOG!", "showConsentDialog: ");
+
+        URL privacyUrl = null;
+        try {
+            privacyUrl = new URL("https://hllabs.github.io/linuxtuts/privacy_policy");
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        ConsentForm form = new ConsentForm.Builder(getApplicationContext(), privacyUrl)
+                .withListener(new ConsentFormListener() {
+                    @Override
+                    public void onConsentFormLoaded() {}
+
+                    @Override
+                    public void onConsentFormOpened() {}
+
+                    @Override
+                    public void onConsentFormClosed(
+                            ConsentStatus consentStatus, Boolean userPrefersAdFree) {
+
+                            switch (consentStatus){
+                                case PERSONALIZED:
+                                    initAd(true);
+                                    break;
+                                default:
+                                    initAd(false);
+                                    break;
+                            }
+
+                        }
+
+                    @Override
+                    public void onConsentFormError(String errorDescription) {
+                        initAd(true);
+                    }
+                })
+                .withPersonalizedAdsOption()
+                .withNonPersonalizedAdsOption()
+                .build();
+
+            form.load();
+            form.show();
+
     }
 
     //show the search layout
@@ -204,9 +294,26 @@ public class TutActivity extends AppCompatActivity {
         }
     }
 
+    private void initAd(boolean personalised){
+        Log.d("LOG!", "initAd: ");
+        Bundle extras = new Bundle();
+        extras.putString("npa", "1");
+
+        if(!personalised){
+            adRequest = new AdRequest.Builder().addNetworkExtrasBundle(AdMobAdapter.class, extras).build();
+        }
+        else adRequest = new AdRequest.Builder().build();
+
+        mInterstitialAd.setAdUnitId("ca-app-pub-7444749934962149/8280385634");
+        mInterstitialAd.loadAd(adRequest);
+
+    }
+
     @Override
     public void onBackPressed() {
+
         if(mInterstitialAd.isLoaded()){
+
             mInterstitialAd.show();
         }
         super.onBackPressed();
