@@ -71,6 +71,8 @@ public class TutActivity extends AppCompatActivity {
     private String[] titles = Titles.titles;
 
     private AdRequest adRequest;
+    //GDPR consent form
+    private ConsentForm form;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -203,12 +205,15 @@ public class TutActivity extends AppCompatActivity {
         });
 
         final ConsentInformation consentInformation = ConsentInformation.getInstance(getApplicationContext());
-        consentInformation.setDebugGeography(DebugGeography.DEBUG_GEOGRAPHY_EEA);
         String[] publisherIds = {"pub-7444749934962149"};
+
+        //update consent info
         consentInformation.requestConsentInfoUpdate(publisherIds, new ConsentInfoUpdateListener() {
             @Override
             public void onConsentInfoUpdated(ConsentStatus consentStatus) {
                 Log.d("LOG!", "onConsentInfoUpdated: ");
+                //if consent info is known, run ads accordingly.
+                //Else, show the consent dialog
                 switch (consentStatus){
                     case PERSONALIZED:
                         initAd(true);
@@ -227,10 +232,10 @@ public class TutActivity extends AppCompatActivity {
                 }
             }
 
+            //if consent info can't be obtained and this is a EU user, show the consent form
             @Override
             public void onFailedToUpdateConsentInfo(String errorDescription) {
                 Log.d("LOG!", "onFailedToUpdateConsentInfo ");
-
                 if (consentInformation.isRequestLocationInEeaOrUnknown())  showConsentDialog();
                 else initAd(true);
             }
@@ -238,6 +243,7 @@ public class TutActivity extends AppCompatActivity {
 
         mInterstitialAd = new InterstitialAd(this);
         }
+
 
     private void showConsentDialog(){
 
@@ -249,10 +255,15 @@ public class TutActivity extends AppCompatActivity {
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
-        ConsentForm form = new ConsentForm.Builder(getApplicationContext(), privacyUrl)
+
+
+        form = new ConsentForm.Builder(TutActivity.this, privacyUrl)
                 .withListener(new ConsentFormListener() {
+                    //show the form only after it has loaded
                     @Override
-                    public void onConsentFormLoaded() {}
+                    public void onConsentFormLoaded() {
+                        showForm();
+                    }
 
                     @Override
                     public void onConsentFormOpened() {}
@@ -274,16 +285,20 @@ public class TutActivity extends AppCompatActivity {
 
                     @Override
                     public void onConsentFormError(String errorDescription) {
-                        initAd(true);
+                        Log.d("LOG!" , "onConsentFormError: " + errorDescription);
+                        initAd(false);
                     }
                 })
                 .withPersonalizedAdsOption()
                 .withNonPersonalizedAdsOption()
                 .build();
 
-            form.load();
-            form.show();
+        form.load();
 
+    }
+
+    private void showForm(){
+        if(form != null) form.show();
     }
 
     //show the search layout
@@ -294,6 +309,7 @@ public class TutActivity extends AppCompatActivity {
         }
     }
 
+    //initialise and load ads
     private void initAd(boolean personalised){
         Log.d("LOG!", "initAd: ");
         Bundle extras = new Bundle();
