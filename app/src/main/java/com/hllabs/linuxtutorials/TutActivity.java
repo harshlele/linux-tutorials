@@ -206,7 +206,6 @@ public class TutActivity extends AppCompatActivity {
 
         final ConsentInformation consentInformation = ConsentInformation.getInstance(getApplicationContext());
         String[] publisherIds = {"pub-7444749934962149"};
-
         //update consent info
         consentInformation.requestConsentInfoUpdate(publisherIds, new ConsentInfoUpdateListener() {
             @Override
@@ -242,7 +241,9 @@ public class TutActivity extends AppCompatActivity {
         });
 
         mInterstitialAd = new InterstitialAd(this);
-        }
+        mInterstitialAd.setAdUnitId("ca-app-pub-7444749934962149/8280385634");
+
+    }
 
 
     private void showConsentDialog(){
@@ -320,7 +321,6 @@ public class TutActivity extends AppCompatActivity {
         }
         else adRequest = new AdRequest.Builder().build();
 
-        mInterstitialAd.setAdUnitId("ca-app-pub-7444749934962149/8280385634");
         mInterstitialAd.loadAd(adRequest);
 
     }
@@ -388,7 +388,6 @@ public class TutActivity extends AppCompatActivity {
             case R.id.action_search:
                 showSearchDialog();
                 return true;
-
             default:
                 return super.onOptionsItemSelected(item);
         }

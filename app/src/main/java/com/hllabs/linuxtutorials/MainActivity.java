@@ -17,11 +17,23 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.amulyakhare.textdrawable.TextDrawable;
+import com.google.ads.consent.ConsentForm;
+import com.google.ads.consent.ConsentFormListener;
+import com.google.ads.consent.ConsentInfoUpdateListener;
+import com.google.ads.consent.ConsentInformation;
+import com.google.ads.consent.ConsentStatus;
+import com.google.ads.consent.DebugGeography;
+
+import java.net.MalformedURLException;
+import java.net.URL;
 
 public class MainActivity extends AppCompatActivity {
 
     //list of tutorials
     private RecyclerView tutorialList;
+
+    private ConsentForm form;
+    private ConsentInformation info;
 
 
     @Override
@@ -43,6 +55,16 @@ public class MainActivity extends AppCompatActivity {
         tutorialList.setAdapter(new TutorialListAdapter());
         tutorialList.setItemAnimator(new DefaultItemAnimator());
 
+        //update consent info for changing ad settings
+        info = ConsentInformation.getInstance(getApplicationContext());
+        String[] publisherIds = {"pub-7444749934962149"};
+        info.requestConsentInfoUpdate(publisherIds, new ConsentInfoUpdateListener() {
+            @Override
+            public void onConsentInfoUpdated(ConsentStatus consentStatus) { }
+
+            @Override
+            public void onFailedToUpdateConsentInfo(String reason) { }
+        });
 
     }
 
@@ -73,8 +95,59 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
 
+        else if(item.getItemId() == R.id.action_ad_settings){
+            showConsentDialog();
+        }
+
         return super.onOptionsItemSelected(item);
     }
+
+    //show consent dialog(do nothing when the form is closed, though)
+    private void showConsentDialog(){
+
+        Log.d("LOG!", "showConsentDialog: ");
+
+        URL privacyUrl = null;
+        try {
+            privacyUrl = new URL("https://hllabs.github.io/linuxtuts/privacy_policy");
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+
+
+        form = new ConsentForm.Builder(MainActivity.this, privacyUrl)
+                .withListener(new ConsentFormListener() {
+                    //show the form only after it has loaded
+                    @Override
+                    public void onConsentFormLoaded() {
+                        showForm();
+                    }
+
+                    @Override
+                    public void onConsentFormOpened() {}
+
+                    @Override
+                    public void onConsentFormClosed(
+                            ConsentStatus consentStatus, Boolean userPrefersAdFree) {}
+
+                    @Override
+                    public void onConsentFormError(String errorDescription) {
+                        Log.d("LOG!" , "onConsentFormError: " + errorDescription);
+
+                    }
+                })
+                .withPersonalizedAdsOption()
+                .withNonPersonalizedAdsOption()
+                .build();
+
+        form.load();
+
+    }
+
+    private void showForm(){
+        if(form != null) form.show();
+    }
+
 
     //tutorial list adapter
     class TutorialListAdapter extends RecyclerView.Adapter<TutorialListAdapter.ViewHolder>{

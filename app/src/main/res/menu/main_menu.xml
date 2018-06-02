@@ -8,5 +8,11 @@
         android:title="Share this App"
         app:showAsAction="ifRoom"/>
 
+    <item
+        android:id="@+id/action_ad_settings"
+        android:title="Ad Settings"
+        app:showAsAction="never"/>
+
+
 
 </menu>
