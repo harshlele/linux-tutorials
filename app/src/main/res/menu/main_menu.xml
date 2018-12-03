@@ -13,6 +13,10 @@
         android:title="Ad Settings"
         app:showAsAction="never"/>
 
+    <item
+        android:id="@+id/action_privacy_policy"
+        android:title="Privacy Policy"
+        app:showAsAction="never"/>
 
 
 </menu>

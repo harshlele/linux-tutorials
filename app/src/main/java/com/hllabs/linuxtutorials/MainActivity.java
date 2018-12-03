@@ -1,6 +1,7 @@
 package com.hllabs.linuxtutorials;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -97,6 +98,11 @@ public class MainActivity extends AppCompatActivity {
 
         else if(item.getItemId() == R.id.action_ad_settings){
             showConsentDialog();
+        }
+
+        else if(item.getItemId() == R.id.action_privacy_policy){
+            Intent i = new Intent(Intent.ACTION_VIEW,Uri.parse("https://hllabs.github.io/linuxtuts/privacy_policy"));
+            startActivity(i);
         }
 
         return super.onOptionsItemSelected(item);
